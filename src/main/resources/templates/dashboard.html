@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Dashboard</title>
+</head>
+<body>
+<h1>VitalPet</h1>
+<p>
+    Olá, <span th:text="${usuarioNome}">usuário</span>
+    (<span th:text="${usuarioRole}">perfil</span>)
+    -
+    <form th:action="@{/web/logout}" method="post" style="display:inline">
+        <button type="submit">Sair</button>
+    </form>
+</p>
+
+<nav>
+    <a th:href="@{/web/dashboard}">Dashboard</a>
+    <span sec:authorize="hasRole('ADMIN')">
+        | <a th:href="@{/web/clinicas}">Clínicas</a>
+        | <a th:href="@{/web/veterinarios}">Veterinários</a>
+        | <a th:href="@{/web/tutores}">Tutores</a>
+    </span>
+    | <a th:href="@{/web/pets}">Pets</a>
+    | <a th:href="@{/web/consultas}">Consultas</a>
+    | <a th:href="@{/web/alertas}">Alertas</a>
+</nav>
+
+<h2>Resumo operacional</h2>
+<ul>
+    <li>Clínicas ativas: <span th:text="${resumo.clinicasAtivas()}">0</span></li>
+    <li>Tutores ativos: <span th:text="${resumo.tutoresAtivos()}">0</span></li>
+    <li>Pets ativos: <span th:text="${resumo.petsAtivos()}">0</span></li>
+    <li>Veterinários ativos: <span th:text="${resumo.veterinariosAtivos()}">0</span></li>
+    <li>Consultas agendadas: <span th:text="${resumo.consultasAgendadas()}">0</span></li>
+    <li>Consultas concluídas: <span th:text="${resumo.consultasConcluidas()}">0</span></li>
+    <li>Alertas pendentes: <span th:text="${resumo.alertasPendentes()}">0</span></li>
+    <li>Alertas de alta prioridade: <span th:text="${resumo.alertasAltaPrioridade()}">0</span></li>
+    <li>Faturamento total: <span th:text="${resumo.faturamentoTotal()}">0</span></li>
+</ul>
+</body>
+</html>

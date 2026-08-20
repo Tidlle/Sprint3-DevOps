@@ -2,6 +2,8 @@ package com.clyvo.vitalpet.exception;
 
 import com.clyvo.vitalpet.dto.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,10 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.clyvo.vitalpet.controller")
 public class ApiExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<ApiErrorResponse> tratarNaoEncontrado(RecursoNaoEncontradoException ex, HttpServletRequest request) {
@@ -43,6 +47,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> tratarGenerico(Exception ex, HttpServletRequest request) {
+        log.error("Erro não tratado ao processar {} {}", request.getMethod(), request.getRequestURI(), ex);
         return montarResposta(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno ao processar a requisição.", request, null);
     }
 

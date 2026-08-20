@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Login</title>
+</head>
+<body>
+<h1>VitalPet</h1>
+<h2>Entrar</h2>
+
+<p th:if="${erro}">E-mail ou senha inválidos.</p>
+<p th:if="${logout}">Você saiu do sistema.</p>
+
+<form th:action="@{/web/login}" method="post">
+    <div>
+        <label for="username">E-mail</label>
+        <input type="email" id="username" name="username" required autofocus>
+    </div>
+    <div>
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Entrar</button>
+</form>
+</body>
+</html>
