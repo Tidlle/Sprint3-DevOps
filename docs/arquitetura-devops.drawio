@@ -1,0 +1,26 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Arquitetura VitalPet DevOps" id="vitalpet-devops">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" value="Usuário / Professor / Postman" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="40" y="250" width="190" height="70" as="geometry" /></mxCell>
+        <mxCell id="internet" value="Internet" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1"><mxGeometry x="280" y="255" width="120" height="60" as="geometry" /></mxCell>
+        <mxCell id="azure" value="Azure Cloud" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="460" y="80" width="590" height="520" as="geometry" /></mxCell>
+        <mxCell id="vm" value="VM Linux Ubuntu" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="azure"><mxGeometry x="30" y="60" width="530" height="420" as="geometry" /></mxCell>
+        <mxCell id="docker" value="Docker Engine + Docker Compose" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="vm"><mxGeometry x="35" y="50" width="460" height="60" as="geometry" /></mxCell>
+        <mxCell id="api" value="Container vitalpet-api&lt;br&gt;Java 17 + Spring Boot&lt;br&gt;Porta 8080&lt;br&gt;Usuário sem privilégio: appuser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="vm"><mxGeometry x="50" y="150" width="200" height="120" as="geometry" /></mxCell>
+        <mxCell id="h2" value="Container vitalpet-h2&lt;br&gt;Banco H2 Server&lt;br&gt;Porta Web 81 / TCP 1521" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="vm"><mxGeometry x="295" y="150" width="200" height="120" as="geometry" /></mxCell>
+        <mxCell id="volume" value="Volume nomeado&lt;br&gt;vitalpet-h2-data&lt;br&gt;Persistência do banco" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="vm"><mxGeometry x="315" y="310" width="160" height="80" as="geometry" /></mxCell>
+        <mxCell id="github" value="GitHub Público&lt;br&gt;Código + README + Dockerfile + Compose + Scripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1"><mxGeometry x="760" y="650" width="250" height="80" as="geometry" /></mxCell>
+        <mxCell id="cli" value="Azure CLI Script&lt;br&gt;Cria VM, abre portas, instala Docker e sobe containers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1"><mxGeometry x="120" y="620" width="270" height="90" as="geometry" /></mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="user" target="internet" style="endArrow=block;html=1;rounded=0;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="HTTP 8080" edge="1" parent="1" source="internet" target="api" style="endArrow=block;html=1;rounded=0;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="JDBC TCP" edge="1" parent="vm" source="api" target="h2" style="endArrow=block;html=1;rounded=0;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="dados persistidos" edge="1" parent="vm" source="h2" target="volume" style="endArrow=block;html=1;rounded=0;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="provisiona" edge="1" parent="1" source="cli" target="azure" style="endArrow=block;html=1;rounded=0;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="git clone / pull" edge="1" parent="1" source="vm" target="github" style="endArrow=block;html=1;rounded=0;"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

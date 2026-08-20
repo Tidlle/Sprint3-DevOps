@@ -1,0 +1,30 @@
+flowchart LR
+    Usuario[Usuário / Professor / Postman]
+    Internet[Internet]
+    AzureCLI[Script Azure CLI]
+    GitHub[GitHub Público]
+
+    subgraph Azure[Azure Cloud]
+        subgraph VM[VM Linux - Ubuntu]
+            Docker[Docker Engine\nsem Docker Compose]
+            Dockerfile[Dockerfile\nBuild da imagem vitalpet-api]
+            API[Container vitalpet-api\nJava 17 + Spring Boot\nPorta 8080\nUsuário appuser]
+            H2[Container vitalpet-h2\nBanco H2 Server\nWeb 81 / TCP 1521]
+            Volume[(Volume nomeado\nvitalpet-h2-data)]
+            Network[Rede Docker\nvitalpet-network]
+        end
+    end
+
+    Usuario -->|HTTP 8080 / Swagger / Postman| Internet
+    Internet --> API
+    Usuario -->|HTTP 8082 / H2 Console| Internet
+    Internet --> H2
+    AzureCLI -->|Cria VM, abre portas e instala Docker| VM
+    VM -->|git clone / git pull| GitHub
+    Dockerfile -->|docker build| API
+    Docker -->|docker run -d| API
+    Docker -->|docker run -d| H2
+    Network --> API
+    Network --> H2
+    API -->|JDBC TCP| H2
+    H2 -->|persistência dos dados| Volume

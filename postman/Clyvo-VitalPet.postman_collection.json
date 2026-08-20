@@ -1,0 +1,131 @@
+{
+  "info": {
+    "name": "Clyvo VitalPet API",
+    "description": "Collection para testar a API REST do projeto Clyvo VitalPet.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ],
+  "item": [
+    {
+      "name": "01 - Criar clínica",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"VitalPet Vila Mariana\",\n  \"endereco\": \"Rua das Flores, 100\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"04000000\",\n  \"telefone\": \"11999990000\",\n  \"email\": \"contato@vitalpet.com\",\n  \"cnpj\": \"12345678000199\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/clinicas", "host": ["{{baseUrl}}"], "path": ["api", "clinicas"] }
+      }
+    },
+    {
+      "name": "02 - Listar clínicas com paginação e ordenação",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/clinicas?page=0&size=10&sortBy=nome&direction=asc", "host": ["{{baseUrl}}"], "path": ["api", "clinicas"], "query": [{"key":"page","value":"0"},{"key":"size","value":"10"},{"key":"sortBy","value":"nome"},{"key":"direction","value":"asc"}] }
+      }
+    },
+    {
+      "name": "03 - Criar tutor",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Eduardo Martins\",\n  \"email\": \"eduardo@email.com\",\n  \"telefone\": \"11988887777\",\n  \"cpf\": \"12345678901\",\n  \"endereco\": \"Rua Exemplo, 50\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"01001000\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/tutores", "host": ["{{baseUrl}}"], "path": ["api", "tutores"] }
+      }
+    },
+    {
+      "name": "04 - Criar pet",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Thor\",\n  \"especie\": \"Cachorro\",\n  \"raca\": \"Golden Retriever\",\n  \"dataNascimento\": \"2021-05-10\",\n  \"sexo\": \"Macho\",\n  \"peso\": 28.5,\n  \"observacoes\": \"Pet dócil e vacinado\",\n  \"tutorId\": 1\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/pets", "host": ["{{baseUrl}}"], "path": ["api", "pets"] }
+      }
+    },
+    {
+      "name": "05 - Criar veterinário",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Dra. Ana Souza\",\n  \"email\": \"ana@vitalpet.com\",\n  \"telefone\": \"11977776666\",\n  \"crmv\": \"SP-12345\",\n  \"especialidade\": \"Clínica Geral\",\n  \"clinicaId\": 1\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/veterinarios", "host": ["{{baseUrl}}"], "path": ["api", "veterinarios"] }
+      }
+    },
+    {
+      "name": "06 - Criar consulta",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dataHora\": \"2030-06-10T14:30:00\",\n  \"tipo\": \"Rotina\",\n  \"sintomas\": \"Check-up anual\",\n  \"diagnostico\": \"Aguardando avaliação\",\n  \"tratamento\": \"A definir\",\n  \"valor\": 180.00,\n  \"petId\": 1,\n  \"veterinarioId\": 1\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/consultas", "host": ["{{baseUrl}}"], "path": ["api", "consultas"] }
+      }
+    },
+    {
+      "name": "07 - Listar consultas por status",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/consultas?status=AGENDADA&page=0&size=10&sortBy=dataHora&direction=desc", "host": ["{{baseUrl}}"], "path": ["api", "consultas"], "query": [{"key":"status","value":"AGENDADA"},{"key":"page","value":"0"},{"key":"size","value":"10"},{"key":"sortBy","value":"dataHora"},{"key":"direction","value":"desc"}] }
+      }
+    },
+    {
+      "name": "08 - Finalizar consulta e gerar acompanhamento automático",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"diagnostico\": \"Pet saudável, apenas com leve irritação na pele\",\n  \"tratamento\": \"Pomada dermatológica por 7 dias\",\n  \"descricaoAcompanhamento\": \"Monitorar evolução da irritação e confirmar melhora com o tutor\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/consultas/1/finalizar", "host": ["{{baseUrl}}"], "path": ["api", "consultas", "1", "finalizar"] }
+      }
+    },
+    {
+      "name": "09 - Listar alertas pendentes",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/alertas?status=PENDENTE&page=0&size=10&sortBy=dataAlerta&direction=asc", "host": ["{{baseUrl}}"], "path": ["api", "alertas"], "query": [{"key":"status","value":"PENDENTE"},{"key":"page","value":"0"},{"key":"size","value":"10"},{"key":"sortBy","value":"dataAlerta"},{"key":"direction","value":"asc"}] }
+      }
+    },
+    {
+      "name": "10 - Resolver alerta",
+      "request": {
+        "method": "PATCH",
+        "url": { "raw": "{{baseUrl}}/api/alertas/1/resolver", "host": ["{{baseUrl}}"], "path": ["api", "alertas", "1", "resolver"] }
+      }
+    },
+    {
+      "name": "11 - Dashboard resumo",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/dashboard/resumo", "host": ["{{baseUrl}}"], "path": ["api", "dashboard", "resumo"] }
+      }
+    },
+    {
+      "name": "12 - Teste de erro de validação",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"A\",\n  \"email\": \"email-invalido\",\n  \"telefone\": \"\",\n  \"cpf\": \"123\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/tutores", "host": ["{{baseUrl}}"], "path": ["api", "tutores"] }
+      }
+    }
+  ]
+}
