@@ -64,18 +64,19 @@ public class WebConsultaController {
         Long veterinarioRestrito = veterinarioIdRestrito(authentication);
         model.addAttribute("form", new ConsultaRequest(null, "", "", "", "", BigDecimal.ZERO, null, veterinarioRestrito));
         model.addAttribute("id", null);
-        carregarListas(model, authentication);
+        carregarListas(model, veterinarioRestrito);
         return "consultas-form";
     }
 
     @PostMapping
     public String criar(@Valid @ModelAttribute("form") ConsultaRequest form, BindingResult bindingResult,
                          Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
-        form = travarVeterinario(form, authentication);
+        Long veterinarioRestrito = veterinarioIdRestrito(authentication);
+        form = travarVeterinario(form, veterinarioRestrito);
         if (bindingResult.hasErrors()) {
             model.addAttribute("form", form);
             model.addAttribute("id", null);
-            carregarListas(model, authentication);
+            carregarListas(model, veterinarioRestrito);
             return "consultas-form";
         }
         try {
@@ -84,7 +85,7 @@ public class WebConsultaController {
             model.addAttribute("form", form);
             model.addAttribute("id", null);
             model.addAttribute("erro", ex.getMessage());
-            carregarListas(model, authentication);
+            carregarListas(model, veterinarioRestrito);
             return "consultas-form";
         }
         redirectAttributes.addFlashAttribute("sucesso", "Consulta agendada com sucesso.");
@@ -93,13 +94,14 @@ public class WebConsultaController {
 
     @GetMapping("/{id}/editar")
     public String editar(@PathVariable Long id, Authentication authentication, Model model) {
+        Long veterinarioRestrito = veterinarioIdRestrito(authentication);
         ConsultaResponse consulta = consultaService.buscarPorId(id);
-        verificarAcesso(consulta, authentication);
+        verificarAcesso(consulta, veterinarioRestrito);
         model.addAttribute("form", new ConsultaRequest(consulta.dataHora(), consulta.tipo(), consulta.sintomas(),
                 consulta.diagnostico(), consulta.tratamento(), consulta.valor(), consulta.petId(), consulta.veterinarioId()));
         model.addAttribute("id", id);
         model.addAttribute("statusAtual", consulta.status());
-        carregarListas(model, authentication);
+        carregarListas(model, veterinarioRestrito);
         return "consultas-form";
     }
 
@@ -107,14 +109,15 @@ public class WebConsultaController {
     public String atualizar(@PathVariable Long id, @Valid @ModelAttribute("form") ConsultaRequest form,
                              BindingResult bindingResult, Authentication authentication, Model model,
                              RedirectAttributes redirectAttributes) {
+        Long veterinarioRestrito = veterinarioIdRestrito(authentication);
         ConsultaResponse existente = consultaService.buscarPorId(id);
-        verificarAcesso(existente, authentication);
-        form = travarVeterinario(form, authentication);
+        verificarAcesso(existente, veterinarioRestrito);
+        form = travarVeterinario(form, veterinarioRestrito);
         if (bindingResult.hasErrors()) {
             model.addAttribute("form", form);
             model.addAttribute("id", id);
             model.addAttribute("statusAtual", existente.status());
-            carregarListas(model, authentication);
+            carregarListas(model, veterinarioRestrito);
             return "consultas-form";
         }
         ConsultaAtualizacaoRequest atualizacao = new ConsultaAtualizacaoRequest(form.dataHora(), form.tipo(),
@@ -126,7 +129,7 @@ public class WebConsultaController {
             model.addAttribute("id", id);
             model.addAttribute("statusAtual", existente.status());
             model.addAttribute("erro", ex.getMessage());
-            carregarListas(model, authentication);
+            carregarListas(model, veterinarioRestrito);
             return "consultas-form";
         }
         redirectAttributes.addFlashAttribute("sucesso", "Consulta atualizada com sucesso.");
@@ -136,7 +139,7 @@ public class WebConsultaController {
     @GetMapping("/{id}/finalizar")
     public String telaFinalizar(@PathVariable Long id, Authentication authentication, Model model) {
         ConsultaResponse consulta = consultaService.buscarPorId(id);
-        verificarAcesso(consulta, authentication);
+        verificarAcesso(consulta, veterinarioIdRestrito(authentication));
         model.addAttribute("consulta", consulta);
         model.addAttribute("form", new FinalizarConsultaRequest(consulta.diagnostico(), consulta.tratamento(), ""));
         return "consultas-finalizar";
@@ -147,7 +150,7 @@ public class WebConsultaController {
                              BindingResult bindingResult, Authentication authentication, Model model,
                              RedirectAttributes redirectAttributes) {
         ConsultaResponse consulta = consultaService.buscarPorId(id);
-        verificarAcesso(consulta, authentication);
+        verificarAcesso(consulta, veterinarioIdRestrito(authentication));
         if (bindingResult.hasErrors()) {
             model.addAttribute("consulta", consulta);
             return "consultas-finalizar";
@@ -169,14 +172,13 @@ public class WebConsultaController {
     @PostMapping("/{id}/cancelar")
     public String cancelar(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
         ConsultaResponse consulta = consultaService.buscarPorId(id);
-        verificarAcesso(consulta, authentication);
+        verificarAcesso(consulta, veterinarioIdRestrito(authentication));
         consultaService.cancelar(id);
         redirectAttributes.addFlashAttribute("sucesso", "Consulta cancelada.");
         return "redirect:/web/consultas";
     }
 
-    private ConsultaRequest travarVeterinario(ConsultaRequest form, Authentication authentication) {
-        Long veterinarioRestrito = veterinarioIdRestrito(authentication);
+    private ConsultaRequest travarVeterinario(ConsultaRequest form, Long veterinarioRestrito) {
         if (veterinarioRestrito == null) {
             return form;
         }
@@ -184,9 +186,8 @@ public class WebConsultaController {
                 form.tratamento(), form.valor(), form.petId(), veterinarioRestrito);
     }
 
-    private void carregarListas(Model model, Authentication authentication) {
+    private void carregarListas(Model model, Long veterinarioRestrito) {
         model.addAttribute("pets", petService.listar(null, null, null, true, PageRequest.of(0, 500, Sort.by("nome"))).getContent());
-        Long veterinarioRestrito = veterinarioIdRestrito(authentication);
         if (veterinarioRestrito != null) {
             model.addAttribute("veterinarios", List.of(veterinarioService.buscarPorId(veterinarioRestrito)));
             model.addAttribute("veterinarioRestrito", true);
@@ -204,8 +205,7 @@ public class WebConsultaController {
         return null;
     }
 
-    private void verificarAcesso(ConsultaResponse consulta, Authentication authentication) {
-        Long veterinarioRestrito = veterinarioIdRestrito(authentication);
+    private void verificarAcesso(ConsultaResponse consulta, Long veterinarioRestrito) {
         if (veterinarioRestrito != null && !veterinarioRestrito.equals(consulta.veterinarioId())) {
             throw new RegraNegocioException("Você só pode acessar as próprias consultas.");
         }
