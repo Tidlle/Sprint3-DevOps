@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:fragment="topo(secao)">
+    <header class="topbar">
+        <span class="brand">VitalPet</span>
+        <span class="usuario" sec:authorize="isAuthenticated()">
+            Olá, <span sec:authentication="name">usuário</span>
+            <form th:action="@{/web/logout}" method="post">
+                <button type="submit">Sair</button>
+            </form>
+        </span>
+    </header>
+    <nav class="menu" sec:authorize="isAuthenticated()">
+        <a th:href="@{/web/dashboard}" th:classappend="${secao == 'dashboard'} ? 'ativo'">Dashboard</a>
+        <span sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/web/clinicas}" th:classappend="${secao == 'clinicas'} ? 'ativo'">Clínicas</a>
+            <a th:href="@{/web/veterinarios}" th:classappend="${secao == 'veterinarios'} ? 'ativo'">Veterinários</a>
+            <a th:href="@{/web/tutores}" th:classappend="${secao == 'tutores'} ? 'ativo'">Tutores</a>
+        </span>
+        <a th:href="@{/web/pets}" th:classappend="${secao == 'pets'} ? 'ativo'">Pets</a>
+        <a th:href="@{/web/consultas}" th:classappend="${secao == 'consultas'} ? 'ativo'">Consultas</a>
+        <a th:href="@{/web/alertas}" th:classappend="${secao == 'alertas'} ? 'ativo'">Alertas</a>
+    </nav>
+</div>
+</body>
+</html>

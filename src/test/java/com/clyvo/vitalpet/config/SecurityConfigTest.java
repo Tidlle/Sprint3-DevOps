@@ -46,11 +46,9 @@ class SecurityConfigTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void adminPassaPelaAutorizacaoDaAreaAdministrativa() throws Exception {
-        // Sem controller de /web/clinicas ainda (chega no dispatcher e não acha handler) -
-        // o importante aqui é confirmar que NÃO é bloqueado com 403 como o veterinário.
+    void adminAcessaAreaAdministrativa() throws Exception {
         mockMvc.perform(get("/web/clinicas"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test

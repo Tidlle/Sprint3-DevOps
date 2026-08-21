@@ -1,0 +1,188 @@
+* { box-sizing: border-box; }
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f5;
+    color: #22312a;
+}
+
+header.topbar {
+    background: #1f6f4c;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+header.topbar .brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+header.topbar .usuario form {
+    display: inline;
+}
+
+header.topbar .usuario button {
+    background: none;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+nav.menu {
+    background: #164f36;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+nav.menu a {
+    color: #e7f3ec;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+nav.menu a:hover, nav.menu a.ativo {
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+main {
+    max-width: 1100px;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem 3rem;
+}
+
+h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+h2 { font-size: 1.15rem; color: #1f6f4c; margin-top: 2rem; }
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+}
+
+.resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.resumo-grid .item {
+    background: #fff;
+    border-left: 4px solid #1f6f4c;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.resumo-grid .item .valor {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f6f4c;
+}
+
+.resumo-grid .item .rotulo {
+    font-size: 0.85rem;
+    color: #5b6b62;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th, td {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid #e3e8e5;
+    font-size: 0.9rem;
+}
+
+th { background: #eef4f0; color: #1f6f4c; }
+
+tr.inativo { opacity: 0.55; }
+
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+}
+.badge.ok, .badge.baixa { background: #2e8b57; }
+.badge.pendente, .badge.media, .badge.agendada { background: #c9820f; }
+.badge.critico, .badge.alta, .badge.cancelada { background: #c0392b; }
+.badge.neutro, .badge.concluida, .badge.resolvido, .badge.concluido { background: #4a6e5a; }
+
+.acoes { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.acoes form { display: inline; }
+
+button, .btn, input[type=submit] {
+    background: #1f6f4c;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button.secundario, .btn.secundario {
+    background: #6b7d73;
+}
+
+button.perigo, .btn.perigo {
+    background: #b23b3b;
+}
+
+form.filtro {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    align-items: end;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.85rem;
+}
+
+.campo label { font-size: 0.85rem; margin-bottom: 0.25rem; color: #3d4c43; }
+
+.campo input, .campo select, .campo textarea {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #cbd6cf;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.erro-campo { color: #b23b3b; font-size: 0.8rem; margin-top: 0.15rem; }
+
+.alerta-flash {
+    padding: 0.6rem 0.9rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+.alerta-flash.sucesso { background: #e1f3e8; color: #1f6f4c; border: 1px solid #b7ddc4; }
+.alerta-flash.erro { background: #fdecec; color: #b23b3b; border: 1px solid #f3bcbc; }
+
+.paginacao { display: flex; gap: 0.75rem; margin-top: 1rem; align-items: center; }
+.paginacao span { font-size: 0.85rem; color: #5b6b62; }

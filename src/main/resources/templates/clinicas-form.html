@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Clínica</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('clinicas')}"></div>
+<main>
+    <h1 th:text="${id == null} ? 'Nova clínica' : 'Editar clínica'">Clínica</h1>
+
+    <div class="card">
+        <p class="alerta-flash erro" th:if="${erro}" th:text="${erro}">Erro</p>
+
+        <form th:object="${form}" th:action="${id == null} ? @{/web/clinicas} : @{'/web/clinicas/' + ${id}}" method="post">
+            <div class="campo">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" th:value="${form.nome()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="endereco">Endereço</label>
+                <input type="text" id="endereco" name="endereco" th:value="${form.endereco()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('endereco')}" th:errors="*{endereco}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="cidade">Cidade</label>
+                <input type="text" id="cidade" name="cidade" th:value="${form.cidade()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="estado">Estado (UF)</label>
+                <input type="text" id="estado" name="estado" maxlength="2" th:value="${form.estado()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="cep">CEP</label>
+                <input type="text" id="cep" name="cep" th:value="${form.cep()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('cep')}" th:errors="*{cep}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" name="telefone" th:value="${form.telefone()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" th:value="${form.email()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="cnpj">CNPJ (somente números)</label>
+                <input type="text" id="cnpj" name="cnpj" th:value="${form.cnpj()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('cnpj')}" th:errors="*{cnpj}">erro</span>
+            </div>
+
+            <button type="submit">Salvar</button>
+            <a class="btn secundario" th:href="@{/web/clinicas}">Cancelar</a>
+        </form>
+    </div>
+</main>
+</body>
+</html>

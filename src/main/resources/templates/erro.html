@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Não foi possível concluir a ação</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('')}"></div>
+<main>
+    <div class="card">
+        <h1>Não foi possível concluir a ação</h1>
+        <p th:text="${mensagem}">Recurso não encontrado.</p>
+        <a class="btn" th:href="@{/web/dashboard}">Voltar ao dashboard</a>
+    </div>
+</main>
+</body>
+</html>

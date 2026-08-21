@@ -1,44 +1,57 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>VitalPet - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h1>VitalPet</h1>
-<p>
-    Olá, <span th:text="${usuarioNome}">usuário</span>
-    (<span th:text="${usuarioRole}">perfil</span>)
-    -
-    <form th:action="@{/web/logout}" method="post" style="display:inline">
-        <button type="submit">Sair</button>
-    </form>
-</p>
+<div th:replace="~{fragments/nav :: topo('dashboard')}"></div>
+<main>
+    <h1>Resumo operacional</h1>
+    <p style="color:#5b6b62;">
+        Bem-vindo(a), <span th:text="${usuarioNome}">usuário</span>
+        (<span th:text="${usuarioRole}">perfil</span>)
+    </p>
 
-<nav>
-    <a th:href="@{/web/dashboard}">Dashboard</a>
-    <span sec:authorize="hasRole('ADMIN')">
-        | <a th:href="@{/web/clinicas}">Clínicas</a>
-        | <a th:href="@{/web/veterinarios}">Veterinários</a>
-        | <a th:href="@{/web/tutores}">Tutores</a>
-    </span>
-    | <a th:href="@{/web/pets}">Pets</a>
-    | <a th:href="@{/web/consultas}">Consultas</a>
-    | <a th:href="@{/web/alertas}">Alertas</a>
-</nav>
-
-<h2>Resumo operacional</h2>
-<ul>
-    <li>Clínicas ativas: <span th:text="${resumo.clinicasAtivas()}">0</span></li>
-    <li>Tutores ativos: <span th:text="${resumo.tutoresAtivos()}">0</span></li>
-    <li>Pets ativos: <span th:text="${resumo.petsAtivos()}">0</span></li>
-    <li>Veterinários ativos: <span th:text="${resumo.veterinariosAtivos()}">0</span></li>
-    <li>Consultas agendadas: <span th:text="${resumo.consultasAgendadas()}">0</span></li>
-    <li>Consultas concluídas: <span th:text="${resumo.consultasConcluidas()}">0</span></li>
-    <li>Alertas pendentes: <span th:text="${resumo.alertasPendentes()}">0</span></li>
-    <li>Alertas de alta prioridade: <span th:text="${resumo.alertasAltaPrioridade()}">0</span></li>
-    <li>Faturamento total: <span th:text="${resumo.faturamentoTotal()}">0</span></li>
-</ul>
+    <div class="resumo-grid">
+        <div class="item">
+            <div class="valor" th:text="${resumo.clinicasAtivas()}">0</div>
+            <div class="rotulo">Clínicas ativas</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.tutoresAtivos()}">0</div>
+            <div class="rotulo">Tutores ativos</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.petsAtivos()}">0</div>
+            <div class="rotulo">Pets ativos</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.veterinariosAtivos()}">0</div>
+            <div class="rotulo">Veterinários ativos</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.consultasAgendadas()}">0</div>
+            <div class="rotulo">Consultas agendadas</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.consultasConcluidas()}">0</div>
+            <div class="rotulo">Consultas concluídas</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.alertasPendentes()}">0</div>
+            <div class="rotulo">Alertas pendentes</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${resumo.alertasAltaPrioridade()}">0</div>
+            <div class="rotulo">Alertas de alta prioridade</div>
+        </div>
+        <div class="item">
+            <div class="valor" th:text="${'R$ ' + resumo.faturamentoTotal()}">R$ 0</div>
+            <div class="rotulo">Faturamento (consultas concluídas)</div>
+        </div>
+    </div>
+</main>
 </body>
 </html>

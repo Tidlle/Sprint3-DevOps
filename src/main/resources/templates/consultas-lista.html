@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Consultas</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('consultas')}"></div>
+<main>
+    <h1>Consultas</h1>
+
+    <p class="alerta-flash sucesso" th:if="${sucesso}" th:text="${sucesso}">ok</p>
+
+    <form class="filtro" method="get" th:action="@{/web/consultas}">
+        <div class="campo">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="" th:selected="${status == null or status.isEmpty()}">Todos</option>
+                <option value="AGENDADA" th:selected="${status == 'AGENDADA'}">Agendada</option>
+                <option value="CONCLUIDA" th:selected="${status == 'CONCLUIDA'}">Concluída</option>
+                <option value="CANCELADA" th:selected="${status == 'CANCELADA'}">Cancelada</option>
+            </select>
+        </div>
+        <button type="submit">Filtrar</button>
+        <a class="btn secundario" th:href="@{/web/consultas/novo}">Nova consulta</a>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Pet</th>
+            <th>Veterinário</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${pagina.content}">
+            <td th:text="${#temporals.format(c.dataHora(), 'dd/MM/yyyy HH:mm')}">Data</td>
+            <td th:text="${c.petNome()}">Pet</td>
+            <td th:text="${c.veterinarioNome()}">Vet</td>
+            <td th:text="${c.tipo()}">Tipo</td>
+            <td th:text="${'R$ ' + c.valor()}">Valor</td>
+            <td><span class="badge" th:classappend="${#strings.toLowerCase(c.status())}" th:text="${c.status()}">Status</span></td>
+            <td class="acoes">
+                <a th:if="${c.status() == 'AGENDADA'}" class="btn secundario" th:href="@{'/web/consultas/' + ${c.id()} + '/editar'}">Editar</a>
+                <a th:if="${c.status() == 'AGENDADA'}" class="btn" th:href="@{'/web/consultas/' + ${c.id()} + '/finalizar'}">Finalizar</a>
+                <form th:if="${c.status() == 'AGENDADA'}" th:action="@{'/web/consultas/' + ${c.id()} + '/cancelar'}" method="post">
+                    <button type="submit" class="perigo">Cancelar</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${pagina.empty}">
+            <td colspan="7">Nenhuma consulta encontrada.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="paginacao">
+        <a th:if="${!pagina.first}" class="btn secundario" th:href="@{/web/consultas(status=${status}, page=${pagina.number - 1})}">Anterior</a>
+        <span>Página <span th:text="${pagina.number + 1}">1</span> de <span th:text="${pagina.totalPages == 0 ? 1 : pagina.totalPages}">1</span></span>
+        <a th:if="${!pagina.last}" class="btn secundario" th:href="@{/web/consultas(status=${status}, page=${pagina.number + 1})}">Próxima</a>
+    </div>
+</main>
+</body>
+</html>

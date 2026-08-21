@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Tutores</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('tutores')}"></div>
+<main>
+    <h1>Tutores</h1>
+
+    <p class="alerta-flash sucesso" th:if="${sucesso}" th:text="${sucesso}">ok</p>
+
+    <form class="filtro" method="get" th:action="@{/web/tutores}">
+        <div class="campo">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" th:value="${nome}">
+        </div>
+        <button type="submit">Filtrar</button>
+        <a class="btn secundario" th:href="@{/web/tutores/novo}">Novo tutor</a>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
+            <th>Pets</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="t : ${pagina.content}" th:classappend="${!t.ativo()} ? 'inativo'">
+            <td th:text="${t.nome()}">Nome</td>
+            <td th:text="${t.cpf()}">CPF</td>
+            <td th:text="${t.telefone()}">Telefone</td>
+            <td th:text="${t.email()}">E-mail</td>
+            <td th:text="${t.quantidadePets()}">0</td>
+            <td>
+                <span class="badge" th:classappend="${t.ativo()} ? 'ok' : 'critico'" th:text="${t.ativo()} ? 'Ativo' : 'Inativo'">Status</span>
+            </td>
+            <td class="acoes">
+                <a class="btn secundario" th:href="@{'/web/tutores/' + ${t.id()} + '/editar'}">Editar</a>
+                <form th:if="${t.ativo()}" th:action="@{'/web/tutores/' + ${t.id()} + '/desativar'}" method="post">
+                    <button type="submit" class="perigo">Desativar</button>
+                </form>
+                <form th:unless="${t.ativo()}" th:action="@{'/web/tutores/' + ${t.id()} + '/ativar'}" method="post">
+                    <button type="submit">Ativar</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${pagina.empty}">
+            <td colspan="7">Nenhum tutor encontrado.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="paginacao">
+        <a th:if="${!pagina.first}" class="btn secundario" th:href="@{/web/tutores(nome=${nome}, page=${pagina.number - 1})}">Anterior</a>
+        <span>Página <span th:text="${pagina.number + 1}">1</span> de <span th:text="${pagina.totalPages == 0 ? 1 : pagina.totalPages}">1</span></span>
+        <a th:if="${!pagina.last}" class="btn secundario" th:href="@{/web/tutores(nome=${nome}, page=${pagina.number + 1})}">Próxima</a>
+    </div>
+</main>
+</body>
+</html>

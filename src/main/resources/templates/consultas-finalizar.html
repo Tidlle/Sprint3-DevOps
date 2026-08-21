@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Finalizar consulta</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('consultas')}"></div>
+<main>
+    <h1>Finalizar consulta</h1>
+    <p>
+        Pet: <strong th:text="${consulta.petNome()}">Pet</strong> ·
+        Veterinário: <strong th:text="${consulta.veterinarioNome()}">Vet</strong> ·
+        Data: <strong th:text="${#temporals.format(consulta.dataHora(), 'dd/MM/yyyy HH:mm')}">Data</strong>
+    </p>
+
+    <div class="card">
+        <p class="alerta-flash erro" th:if="${erro}" th:text="${erro}">Erro</p>
+        <p style="color:#5b6b62;">
+            Ao registrar o diagnóstico e o tratamento, a consulta é marcada como <strong>CONCLUIDA</strong>.
+            Se você descrever um acompanhamento, o sistema cria automaticamente um
+            <strong>acompanhamento</strong> vinculado a esta consulta e um <strong>alerta de retorno</strong>
+            agendado para daqui a 7 dias - essa é a regra central de continuidade do cuidado do VitalPet.
+        </p>
+
+        <form th:object="${form}" th:action="@{'/web/consultas/' + ${consulta.id()} + '/finalizar'}" method="post">
+            <div class="campo">
+                <label for="diagnostico">Diagnóstico</label>
+                <textarea id="diagnostico" name="diagnostico" rows="3" th:text="${form.diagnostico()}"></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('diagnostico')}" th:errors="*{diagnostico}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="tratamento">Tratamento</label>
+                <textarea id="tratamento" name="tratamento" rows="3" th:text="${form.tratamento()}"></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('tratamento')}" th:errors="*{tratamento}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="descricaoAcompanhamento">Descrição do acompanhamento (opcional)</label>
+                <textarea id="descricaoAcompanhamento" name="descricaoAcompanhamento" rows="3"
+                          th:text="${form.descricaoAcompanhamento()}"
+                          placeholder="Ex.: observar apetite e disposição do pet nos próximos dias."></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('descricaoAcompanhamento')}" th:errors="*{descricaoAcompanhamento}">erro</span>
+            </div>
+
+            <button type="submit">Finalizar consulta</button>
+            <a class="btn secundario" th:href="@{/web/consultas}">Cancelar</a>
+        </form>
+    </div>
+</main>
+</body>
+</html>

@@ -59,11 +59,19 @@ public class AlertaService {
     }
 
     @Transactional
-    @CacheEvict(value = {"alertas", "dashboard"}, allEntries = true)
+    @CacheEvict(value = {"alertas", "acompanhamentos", "dashboard"}, allEntries = true)
     public AlertaResponse resolver(Long id) {
         Alerta alerta = buscarEntidadePorId(id);
         alerta.setStatus("RESOLVIDO");
         alerta.setDataResolucao(LocalDateTime.now());
+
+        Acompanhamento acompanhamento = alerta.getAcompanhamento();
+        if (acompanhamento != null && "ATIVO".equals(acompanhamento.getStatus())) {
+            acompanhamento.setStatus("CONCLUIDO");
+            acompanhamento.setDataFim(LocalDateTime.now());
+            acompanhamentoRepository.save(acompanhamento);
+        }
+
         return AlertaMapper.toResponse(alertaRepository.save(alerta));
     }
 

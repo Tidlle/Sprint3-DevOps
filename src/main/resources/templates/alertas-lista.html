@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Alertas</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('alertas')}"></div>
+<main>
+    <h1>Alertas</h1>
+    <p style="color:#5b6b62;">
+        Alertas são criados automaticamente ao finalizar uma consulta com acompanhamento.
+        Resolver um alerta de retorno conclui também o acompanhamento vinculado.
+    </p>
+
+    <p class="alerta-flash sucesso" th:if="${sucesso}" th:text="${sucesso}">ok</p>
+
+    <form class="filtro" method="get" th:action="@{/web/alertas}">
+        <div class="campo">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="" th:selected="${status == null or status.isEmpty()}">Todos</option>
+                <option value="PENDENTE" th:selected="${status == 'PENDENTE'}">Pendente</option>
+                <option value="RESOLVIDO" th:selected="${status == 'RESOLVIDO'}">Resolvido</option>
+                <option value="CANCELADO" th:selected="${status == 'CANCELADO'}">Cancelado</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label for="prioridade">Prioridade</label>
+            <select id="prioridade" name="prioridade">
+                <option value="" th:selected="${prioridade == null or prioridade.isEmpty()}">Todas</option>
+                <option value="BAIXA" th:selected="${prioridade == 'BAIXA'}">Baixa</option>
+                <option value="MEDIA" th:selected="${prioridade == 'MEDIA'}">Média</option>
+                <option value="ALTA" th:selected="${prioridade == 'ALTA'}">Alta</option>
+            </select>
+        </div>
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Pet</th>
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Prioridade</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${pagina.content}">
+            <td th:text="${#temporals.format(a.dataAlerta(), 'dd/MM/yyyy HH:mm')}">Data</td>
+            <td th:text="${a.petNome()}">Pet</td>
+            <td th:text="${a.titulo()}">Título</td>
+            <td th:text="${a.tipo()}">Tipo</td>
+            <td><span class="badge" th:classappend="${#strings.toLowerCase(a.prioridade())}" th:text="${a.prioridade()}">Prioridade</span></td>
+            <td><span class="badge" th:classappend="${#strings.toLowerCase(a.status())}" th:text="${a.status()}">Status</span></td>
+            <td class="acoes">
+                <form th:if="${a.status() == 'PENDENTE'}" th:action="@{'/web/alertas/' + ${a.id()} + '/resolver'}" method="post">
+                    <button type="submit">Resolver</button>
+                </form>
+                <form th:if="${a.status() == 'PENDENTE'}" th:action="@{'/web/alertas/' + ${a.id()} + '/cancelar'}" method="post">
+                    <button type="submit" class="perigo">Cancelar</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${pagina.empty}">
+            <td colspan="7">Nenhum alerta encontrado.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="paginacao">
+        <a th:if="${!pagina.first}" class="btn secundario" th:href="@{/web/alertas(status=${status}, prioridade=${prioridade}, page=${pagina.number - 1})}">Anterior</a>
+        <span>Página <span th:text="${pagina.number + 1}">1</span> de <span th:text="${pagina.totalPages == 0 ? 1 : pagina.totalPages}">1</span></span>
+        <a th:if="${!pagina.last}" class="btn secundario" th:href="@{/web/alertas(status=${status}, prioridade=${prioridade}, page=${pagina.number + 1})}">Próxima</a>
+    </div>
+</main>
+</body>
+</html>

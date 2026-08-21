@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VitalPet - Pet</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topo('pets')}"></div>
+<main>
+    <h1 th:text="${id == null} ? 'Novo pet' : 'Editar pet'">Pet</h1>
+
+    <div class="card">
+        <p class="alerta-flash erro" th:if="${erro}" th:text="${erro}">Erro</p>
+
+        <form th:object="${form}" th:action="${id == null} ? @{/web/pets} : @{'/web/pets/' + ${id}}" method="post">
+            <div class="campo">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" th:value="${form.nome()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="especie">Espécie</label>
+                <input type="text" id="especie" name="especie" th:value="${form.especie()}" placeholder="Cachorro, Gato...">
+                <span class="erro-campo" th:if="${#fields.hasErrors('especie')}" th:errors="*{especie}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="raca">Raça</label>
+                <input type="text" id="raca" name="raca" th:value="${form.raca()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('raca')}" th:errors="*{raca}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="dataNascimento">Data de nascimento</label>
+                <input type="date" id="dataNascimento" name="dataNascimento" th:value="${form.dataNascimento()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="sexo">Sexo</label>
+                <select id="sexo" name="sexo">
+                    <option value="">Selecione</option>
+                    <option value="MACHO" th:selected="${form.sexo() == 'MACHO'}">Macho</option>
+                    <option value="FEMEA" th:selected="${form.sexo() == 'FEMEA'}">Fêmea</option>
+                </select>
+                <span class="erro-campo" th:if="${#fields.hasErrors('sexo')}" th:errors="*{sexo}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="peso">Peso (kg)</label>
+                <input type="number" id="peso" name="peso" step="0.01" min="0" th:value="${form.peso()}">
+                <span class="erro-campo" th:if="${#fields.hasErrors('peso')}" th:errors="*{peso}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="observacoes">Observações</label>
+                <textarea id="observacoes" name="observacoes" rows="3" th:text="${form.observacoes()}"></textarea>
+                <span class="erro-campo" th:if="${#fields.hasErrors('observacoes')}" th:errors="*{observacoes}">erro</span>
+            </div>
+            <div class="campo">
+                <label for="tutorId">Tutor</label>
+                <select id="tutorId" name="tutorId">
+                    <option value="">Selecione</option>
+                    <option th:each="t : ${tutores}" th:value="${t.id()}" th:text="${t.nome()}"
+                            th:selected="${form.tutorId() != null and form.tutorId() == t.id()}">Tutor</option>
+                </select>
+                <span class="erro-campo" th:if="${#fields.hasErrors('tutorId')}" th:errors="*{tutorId}">erro</span>
+            </div>
+
+            <button type="submit">Salvar</button>
+            <a class="btn secundario" th:href="@{/web/pets}">Cancelar</a>
+        </form>
+    </div>
+</main>
+</body>
+</html>
