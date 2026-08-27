@@ -1,4 +1,4 @@
-# Clyvo VitalPet — Sprint 3 (Java Advanced)
+a# Clyvo VitalPet — Sprint 3 (Java Advanced)
 
 Aplicação web em **Java 17 + Spring Boot**, desenvolvida para a entrega da Sprint 3 da disciplina **Java Advanced** (Challenge FIAP × Clyvo Vet).
 
