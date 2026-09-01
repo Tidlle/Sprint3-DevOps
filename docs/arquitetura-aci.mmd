@@ -1,0 +1,22 @@
+flowchart LR
+    Usuario[Usuário / Professor / Postman / Swagger]
+    Internet[Internet]
+    GitHub[GitHub Público]
+    Dev[docker build / docker push]
+
+    subgraph Azure[Azure Cloud]
+        ACR[Azure Container Registry\nclyvo-vitalpet-api:1.0.0]
+
+        subgraph Grupo[Azure Container Instance - Container Group\nIP público único]
+            API[Container api\nJava 17 + Spring Boot\nPorta 8080 - usuário appuser]
+            MySQL[Container mysql\nMySQL 8\nPorta 3306]
+        end
+    end
+
+    Usuario -->|HTTP 8080 / Swagger / Postman| Internet
+    Internet --> API
+    Dev -->|az acr login + push| ACR
+    ACR -->|pull da imagem| API
+    GitHub -->|git clone| Dev
+    API -->|JDBC via localhost:3306\nmesmo grupo de containers| MySQL
+    API -->|Flyway aplica schema + seed\nna subida da aplicação| MySQL

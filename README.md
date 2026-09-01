@@ -1,6 +1,8 @@
-a# Clyvo VitalPet — Sprint 3 (Java Advanced)
+# Clyvo VitalPet — Sprint 3 (Java Advanced)
 
-Aplicação web em **Java 17 + Spring Boot**, desenvolvida para a entrega da Sprint 3 da disciplina **Java Advanced** (Challenge FIAP × Clyvo Vet).
+## Descrição da Solução
+
+Aplicação web em **Java 17 + Spring Boot**, desenvolvida originalmente para a entrega da Sprint 3 da disciplina **Java Advanced** (Challenge FIAP × Clyvo Vet) e evoluída na Sprint 3 de **DevOps Tools & Cloud Computing** (ver [anexo](#anexo-docker-e-azure--sprint-3-devops-tools--cloud-computing-acr--aci) com a entrega em nuvem).
 
 A solução acompanha o pet **depois** da consulta: ao finalizar um atendimento, o sistema cria automaticamente um acompanhamento clínico e um alerta de retorno; ao resolver esse alerta, o acompanhamento é concluído junto. Toda a operação — clínicas, veterinários, tutores, pets, consultas, acompanhamentos e alertas — é gerenciada por uma aplicação web com login e permissões por perfil.
 
@@ -17,7 +19,7 @@ A solução acompanha o pet **depois** da consulta: ao finalizar um atendimento,
 | # | Requisito | Onde está |
 |---|---|---|
 | 1 | Camada de visualização (frontend) | Telas Thymeleaf em `src/main/resources/templates` — login, dashboard e CRUD completo de Clínicas, Veterinários, Tutores, Pets, Consultas e Alertas |
-| 2 | Flyway para controle de versão do banco | `src/main/resources/db/migration` (`V1__create_schema.sql`, `V2__seed_data.sql`) |
+| 2 | Flyway para controle de versão do banco | `src/main/resources/db/migration/h2` (local/testes) e `.../mysql` (entrega em nuvem) — `V1__create_schema.sql`, `V2__seed_data.sql` |
 | 3 | Spring Security — 2 perfis + proteção de rotas | `config/SecurityConfig.java`, perfis `ADMIN` e `VETERINARIO` (ver seção [Perfis e permissões](#perfis-e-permissões)) |
 | 4 | 2 fluxos completos não-CRUD | Finalizar consulta → gera acompanhamento + alerta; Resolver alerta → conclui acompanhamento (ver [Fluxos de negócio](#fluxos-de-negócio-não-crud)) |
 
@@ -29,7 +31,7 @@ A API REST, o Swagger e a collection do Postman entregues em sprints anteriores 
 - Spring Boot 3.3.5 (Web, Data JPA, Validation, Cache, Security, Thymeleaf)
 - Flyway (versionamento do schema)
 - Thymeleaf + thymeleaf-extras-springsecurity6 (páginas condicionais por perfil)
-- H2 Database
+- H2 Database (perfil padrão, uso local/testes) e MySQL 8 (perfil `mysql`, usado na entrega em nuvem — ver [anexo ACR + ACI](#anexo-docker-e-azure--sprint-3-devops-tools--cloud-computing-acr--aci))
 - Springdoc OpenAPI / Swagger
 - Maven (com Maven Wrapper — não precisa ter o Maven instalado)
 
@@ -357,7 +359,7 @@ SELECT * FROM USUARIOS;
 
 > No profile `docker` (container separado para o banco), a URL de conexão é `jdbc:h2:tcp://localhost:1521/./vitalpetdb` — ver seção [Docker e Azure](#anexo-docker-e-azure-material-de-sprint-anterior) abaixo.
 
-## Benefícios para o negócio
+## Descrição dos Benefícios para o Negócio
 
 - Centralização dos dados de clínicas, tutores, pets, veterinários e consultas.
 - Redução de perda de informações após o atendimento.
@@ -367,9 +369,149 @@ SELECT * FROM USUARIOS;
 
 ---
 
+## Anexo: Docker e Azure — Sprint 3 DevOps Tools & Cloud Computing (ACR + ACI)
+
+**Esta é a entrega válida da Sprint 3 de DevOps Tools & Cloud Computing.** Opção
+escolhida: **ACR + ACI** (containerização completa — aplicação e banco de dados). Banco
+de dados: **MySQL 8 em container** (não é H2, conforme exigido).
+
+### Descrição da solução (nuvem)
+
+A imagem da API é publicada em um **Azure Container Registry (ACR)** e executada, junto
+com um container **MySQL 8**, em um único **Azure Container Instance (ACI)** — os dois
+containers ficam no mesmo grupo, com um IP público exposto na porta 8080, e conversam
+entre si por `localhost:3306`. O schema e a massa de dados são aplicados automaticamente
+pelo Flyway na subida da aplicação, a partir de
+[`src/main/resources/db/migration/mysql`](src/main/resources/db/migration/mysql). O DDL
+completo, comentado, também está disponível em [`script_bd.sql`](script_bd.sql) na raiz
+do repositório.
+
+Diagrama da arquitetura: [`docs/arquitetura-aci.mmd`](docs/arquitetura-aci.mmd).
+Roteiro completo do vídeo de demonstração: [`docs/roteiro-video-aci.md`](docs/roteiro-video-aci.md).
+
+### Por que containers não têm volume persistente na nuvem
+
+O container do MySQL usa armazenamento efêmero (disco do próprio container). Isso evita
+um problema conhecido do Azure Container Instances: montar um volume via Azure File Share
+para o diretório de dados do MySQL quebra o InnoDB, porque o protocolo CIFS não suporta
+corretamente o file locking que o MySQL exige. Para o escopo desta entrega (demonstração
+em vídeo), armazenamento efêmero é suficiente — decisão consciente, não uma omissão.
+
+### 1. Testar localmente com Docker Compose (antes de gastar créditos Azure)
+
+```bash
+cp .env.example .env
+# edite o .env e defina suas próprias senhas (MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD)
+docker compose up --build
+```
+
+Acesse:
+
+```text
+API:      http://localhost:8080
+Swagger:  http://localhost:8080/swagger-ui.html
+```
+
+Para rodar o CRUD de exemplo (Tutores + Pets, tabelas do CORE relacionadas):
+
+```bash
+chmod +x scripts/run-api-tests-tutores-pets.sh
+BASE_URL=http://localhost:8080 ./scripts/run-api-tests-tutores-pets.sh
+```
+
+Para comprovar que o container da API não roda como root:
+
+```bash
+docker exec vitalpet-api whoami
+```
+
+Resultado esperado: `appuser`.
+
+Para parar:
+
+```bash
+docker compose down
+```
+
+### 2. Criar os recursos na Azure (ACR + ACI) via Azure CLI
+
+Todos os recursos (Resource Group, ACR, ACI) são criados via Azure CLI, sem uso do
+Portal.
+
+```bash
+az login
+chmod +x scripts/azure-acr-aci-deploy.sh
+./scripts/azure-acr-aci-deploy.sh
+```
+
+O script executa, nesta ordem:
+
+```bash
+# 1. Resource Group
+az group create --name rg-vitalpet-aci --location canadacentral
+
+# 2. Azure Container Registry
+az acr create --resource-group rg-vitalpet-aci --name <acrName> --sku Basic --admin-enabled true
+
+# 3. Build e publicação da imagem da API no ACR
+az acr login --name <acrName>
+docker build -t <acrName>.azurecr.io/clyvo-vitalpet-api:1.0.0 .
+docker push <acrName>.azurecr.io/clyvo-vitalpet-api:1.0.0
+
+# 4. Grupo de containers (api + mysql) com IP público único
+az container create --resource-group rg-vitalpet-aci --file <manifesto-gerado-em-tempo-de-execucao>
+```
+
+O manifesto do grupo de containers é gerado dinamicamente pelo próprio script (não fica
+versionado, pois contém a senha gerada para o MySQL e as credenciais do ACR). Ele define
+dois containers no mesmo grupo — `api` (imagem do ACR, porta 8080, IP público) e `mysql`
+(imagem oficial `mysql:8.0`, porta 3306, sem IP próprio) — que se comunicam via
+`localhost` dentro do grupo.
+
+Ao final, o terminal exibe:
+
+```text
+API:      http://<FQDN>:8080
+Swagger:  http://<FQDN>:8080/swagger-ui.html
+```
+
+e a senha gerada para o MySQL (usuário `vitalpet` e `root`), útil apenas para a
+demonstração em vídeo — essa senha não é gravada em nenhum arquivo do repositório.
+
+### 3. Rodar SELECTs no MySQL durante a demonstração
+
+```bash
+az container exec \
+  --resource-group rg-vitalpet-aci \
+  --name vitalpet-aci \
+  --container-name mysql \
+  --exec-command "mysql -u vitalpet -p<senha-exibida-pelo-script> vitalpetdb"
+```
+
+```sql
+SELECT * FROM tutores;
+SELECT * FROM pets;
+```
+
+### 4. Teste rápido do CRUD via script (contra a API pública na Azure)
+
+```bash
+chmod +x scripts/run-api-tests-tutores-pets.sh
+BASE_URL=http://<FQDN>:8080 ./scripts/run-api-tests-tutores-pets.sh
+```
+
+### 5. Remover os recursos ao final da gravação
+
+```bash
+chmod +x scripts/delete-azure-aci-resources.sh
+./scripts/delete-azure-aci-resources.sh
+```
+
+---
+
 ## Anexo: Docker e Azure (material de sprint anterior)
 
-O conteúdo abaixo documenta a conteinerização e o deploy na Azure feitos na entrega de **DevOps Tools & Cloud Computing** de uma sprint anterior. Não faz parte dos requisitos da Sprint 3 de Java Advanced (que não exige nem restringe o uso de Docker), mas os scripts continuam funcionais e foram mantidos no repositório.
+O conteúdo abaixo documenta a conteinerização e o deploy na Azure feitos na entrega de **DevOps Tools & Cloud Computing** de uma sprint anterior, em uma VM com banco H2 em container. **Não é a entrega válida desta Sprint** — o banco H2 não é aceito e VM crua não é uma das opções permitidas pelo enunciado atual. Mantido apenas como registro histórico; os scripts continuam funcionais.
 
 ### Como executar localmente com Dockerfile
 
