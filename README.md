@@ -387,7 +387,6 @@ completo, comentado, também está disponível em [`script_bd.sql`](script_bd.sq
 do repositório.
 
 Diagrama da arquitetura: [`docs/arquitetura-aci.mmd`](docs/arquitetura-aci.mmd).
-Roteiro completo do vídeo de demonstração: [`docs/roteiro-video-aci.md`](docs/roteiro-video-aci.md).
 
 ### Por que containers não têm volume persistente na nuvem
 
