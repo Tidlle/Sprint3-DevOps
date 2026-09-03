@@ -448,7 +448,7 @@ O script executa, nesta ordem:
 
 ```bash
 # 1. Resource Group
-az group create --name rg-vitalpet-aci --location canadacentral
+az group create --name rg-vitalpet-aci --location eastus
 
 # 2. Azure Container Registry
 az acr create --resource-group rg-vitalpet-aci --name <acrName> --sku Basic --admin-enabled true
@@ -480,13 +480,26 @@ demonstração em vídeo — essa senha não é gravada em nenhum arquivo do rep
 
 ### 3. Rodar SELECTs no MySQL durante a demonstração
 
+`az container exec` não passa o comando por um shell — strings com espaços/aspas (como
+um `SELECT`) chegam quebradas no container. Por isso, abra uma sessão interativa e digite
+os comandos depois de conectado (também fica melhor para o vídeo, mostrando a sessão ao
+vivo):
+
 ```bash
 az container exec \
   --resource-group rg-vitalpet-aci \
   --name vitalpet-aci \
   --container-name mysql \
-  --exec-command "mysql -u vitalpet -p<senha-exibida-pelo-script> vitalpetdb"
+  --exec-command "/bin/sh"
 ```
+
+Dentro do container:
+
+```bash
+mysql -u vitalpet -p vitalpetdb
+```
+
+Informe a senha exibida pelo script ao final do deploy e, no prompt do MySQL:
 
 ```sql
 SELECT * FROM tutores;

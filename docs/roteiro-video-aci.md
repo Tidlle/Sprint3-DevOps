@@ -29,7 +29,9 @@ Sem cortes durante as etapas de teste/CRUD (exigência do enunciado). Mínimo 72
     - Exclusão do pet e do tutor → novo `SELECT` mostrando a remoção/inativação.
     - Consulta geral (`GET` com filtros) evidenciando a integração completa entre app e
       banco.
-12. Para os `SELECT`s, conectar no MySQL com:
-    `az container exec --resource-group rg-vitalpet-aci --name vitalpet-aci --container-name mysql --exec-command "mysql -u vitalpet -p<senha> vitalpetdb"`
+12. Para os `SELECT`s, abrir uma sessão interativa no container do MySQL (não dá para
+    passar o `SELECT` direto no `--exec-command`, pois ele não passa por um shell):
+    `az container exec --resource-group rg-vitalpet-aci --name vitalpet-aci --container-name mysql --exec-command "/bin/sh"`,
+    depois `mysql -u vitalpet -p vitalpetdb` e digitar os `SELECT`s no prompt.
 13. Executar `scripts/delete-azure-aci-resources.sh` ao final, mostrando a remoção dos
     recursos (Resource Group, ACR e ACI) para não consumir créditos da assinatura.

@@ -20,7 +20,9 @@ set -e
 # =========================================================================
 
 RG_NAME="${RG_NAME:-rg-vitalpet-aci}"
-LOCATION="${LOCATION:-canadacentral}"
+# canadacentral e outras regioes ficaram bloqueadas por politica da assinatura
+# "Azure for Students" ("best available regions"); eastus foi a regiao validada.
+LOCATION="${LOCATION:-eastus}"
 ACR_NAME="${ACR_NAME:-acrvitalpet$RANDOM}"
 IMAGE_NAME="clyvo-vitalpet-api"
 IMAGE_TAG="1.0.0"
